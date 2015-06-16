@@ -13,6 +13,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.PutDataMapRequest;
@@ -23,7 +24,7 @@ import java.util.Date;
 
 public class MainActivity
         extends BaseActivity
-        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener, GetFirstDataItem.ProcessDataItemAble
 {
     private GoogleApiClient mGoogleApiClient;
     private Handler mHandler;
@@ -74,6 +75,9 @@ public class MainActivity
     public void onConnected(Bundle connectionHint) {
         Log.d(Const.TAG, "Successful connection to Google Play Services");
         Wearable.DataApi.addListener(mGoogleApiClient, this);
+
+        // Retrieve the latest data item from any source, calls processDataItem when done
+        GetFirstDataItem.callProcessDataItem(mGoogleApiClient, Const.LOCK_PATH, this);
     }
 
     @Override
@@ -120,32 +124,37 @@ public class MainActivity
         });
     }
 
+    public void processDataItem(DataItem dataItem) {
+        DataMap dataMap = DataMapItem.fromDataItem(dataItem).getDataMap();
+        String path = dataItem.getUri().getPath();
+        if (path.equals(Const.LOCK_PATH)) {
+            long timestamp = dataMap.getLong("timestamp");
+            boolean state = dataMap.getBoolean("state");
+            Log.d(Const.TAG, "Updating UI based on data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
+
+            String deviceType;
+            if (Const.DEVICE == Const.PHONE) {
+                deviceType = "Remote Wear";
+            } else {
+                deviceType = "Local";
+            }
+            if (state) {
+                setLockState(deviceType + " Display Locked On\nAmbient Will Never Happen");
+            } else {
+                setLockState(deviceType + " Display Not Locked\nAmbient Is Possible");
+            }
+        } else {
+            Log.d(Const.TAG, "Ignoring data item update for path " + path);
+        }
+    }
+
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         Log.d(Const.TAG, "MainActivity onDataChanged() to update the UI state");
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
-                DataMap dataMap = DataMapItem.fromDataItem(dataEvent.getDataItem()).getDataMap();
-                String path = dataEvent.getDataItem().getUri().getPath();
-                if (path.equals(Const.LOCK_PATH)) {
-                    long timestamp = dataMap.getLong("timestamp");
-                    boolean state = dataMap.getBoolean("state");
-                    Log.d(Const.TAG, "Updating UI based on data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
-
-                    String deviceType;
-                    if (Const.DEVICE == Const.PHONE) {
-                        deviceType = "Remote Wear";
-                    } else {
-                        deviceType = "Local";
-                    }
-                    if (state) {
-                        setLockState(deviceType + " Display Locked On\nAmbient Will Never Happen");
-                    } else {
-                        setLockState(deviceType + " Display Not Locked\nAmbient Is Possible");
-                    }
-                } else {
-                    Log.d(Const.TAG, "Ignoring data item update for path " + path);
-                }
+                DataItem dataItem = dataEvent.getDataItem();
+                processDataItem(dataItem);
             }
         }
     }
