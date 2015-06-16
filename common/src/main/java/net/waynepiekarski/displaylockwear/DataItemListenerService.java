@@ -58,6 +58,10 @@ public class DataItemListenerService
         }
     }
 
+    public void missingDataItem() {
+        Log.d(Const.TAG, "missingDataItem() doing nothing inside service, there is no need to do anything");
+    }
+
     public void processDataItem(DataItem dataItem) {
         DataMap dataMap = DataMapItem.fromDataItem(dataItem).getDataMap();
         String path = dataItem.getUri().getPath();

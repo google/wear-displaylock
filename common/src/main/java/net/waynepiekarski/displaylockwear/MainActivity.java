@@ -113,7 +113,7 @@ public class MainActivity
                 });
     }
 
-    public void setLockState(final String in) {
+    public void setLockStateString(final String in) {
         Log.d(Const.TAG, "Scheduling set of lock state UI string to " + in);
         mHandler.post(new Runnable() {
             @Override
@@ -124,6 +124,25 @@ public class MainActivity
         });
     }
 
+    public void setLockState(boolean state) {
+        String deviceType;
+        if (Const.DEVICE == Const.PHONE) {
+            deviceType = "Remote Wear";
+        } else {
+            deviceType = "Local";
+        }
+        if (state) {
+            setLockStateString(deviceType + " Display Locked On\nAmbient Will Never Happen");
+        } else {
+            setLockStateString(deviceType + " Display Not Locked\nAmbient Is Possible");
+        }
+    }
+
+    public void missingDataItem() {
+        Log.d(Const.TAG, "missingDataItem() setting state=false");
+        setLockState(false);
+    }
+
     public void processDataItem(DataItem dataItem) {
         DataMap dataMap = DataMapItem.fromDataItem(dataItem).getDataMap();
         String path = dataItem.getUri().getPath();
@@ -131,20 +150,9 @@ public class MainActivity
             long timestamp = dataMap.getLong("timestamp");
             boolean state = dataMap.getBoolean("state");
             Log.d(Const.TAG, "Updating UI based on data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
-
-            String deviceType;
-            if (Const.DEVICE == Const.PHONE) {
-                deviceType = "Remote Wear";
-            } else {
-                deviceType = "Local";
-            }
-            if (state) {
-                setLockState(deviceType + " Display Locked On\nAmbient Will Never Happen");
-            } else {
-                setLockState(deviceType + " Display Not Locked\nAmbient Is Possible");
-            }
+            setLockState(state);
         } else {
-            Log.d(Const.TAG, "Ignoring data item update for path " + path);
+            Log.d(Const.TAG, "Ignoring data item update for unknown path " + path);
         }
     }
 

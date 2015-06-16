@@ -37,6 +37,7 @@ public class GetFirstDataItem {
 
     public interface ProcessDataItemAble {
         void processDataItem (DataItem in);
+        void missingDataItem ();
     }
 
     public static void callProcessDataItem(GoogleApiClient mGoogleApiClient, final String path, final ProcessDataItemAble callback) {
@@ -57,6 +58,10 @@ public class GetFirstDataItem {
                         }
                     }
                     Collections.sort(array, Comparators.compareTimestamp);
+                    if (array.size() == 0) {
+                        Log.d(Const.TAG, "No data item found, so calling missingDataItem()");
+                        callback.missingDataItem();
+                    }
                     for (int i = 0; i < array.size(); i++) {
                         ExtractedDataItem item = array.get(i);
                         if (i == 0) {
