@@ -1,11 +1,9 @@
 package net.waynepiekarski.displaylockwear;
 
-import android.app.Service;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.IBinder;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
@@ -16,11 +14,23 @@ import com.google.android.gms.wearable.WearableListenerService;
 
 public class DataItemListenerService extends WearableListenerService implements DataApi.DataListener {
 
-    void setLockState(boolean state) {
+    PowerManager mPowerManager;
+    PowerManager.WakeLock mWakeLock;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, Const.TAG);
+    }
+
+    private void setLockState(boolean state) {
         if (state) {
-            Log.d(Const.TAG, "Locking display with addFlags FLAG_KEEP_SCREEN_ON");
+            Log.d(Const.TAG, "Locking display with power manager SCREEN_DIM_WAKE_LOCK");
+            mWakeLock.acquire();
         } else {
-            Log.d(Const.TAG, "Unlocking display with clearFlags FLAG_KEEP_SCREEN_ON");
+            Log.d(Const.TAG, "Unlocking display with power manager SCREEN_DIM_WAKE_LOCK");
+            mWakeLock.release();
         }
     }
 
