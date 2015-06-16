@@ -21,15 +21,15 @@ public class DataItemListenerService extends WearableListenerService implements 
     public void onCreate() {
         super.onCreate();
         mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, Const.TAG);
+        mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, Const.TAG);
     }
 
     private void setLockState(boolean state) {
         if (state) {
-            Log.d(Const.TAG, "Locking display with power manager SCREEN_DIM_WAKE_LOCK");
+            Log.d(Const.TAG, "Locking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
             mWakeLock.acquire();
         } else {
-            Log.d(Const.TAG, "Unlocking display with power manager SCREEN_DIM_WAKE_LOCK");
+            Log.d(Const.TAG, "Unlocking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
             mWakeLock.release();
         }
     }
