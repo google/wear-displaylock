@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-    private TextView mTextView;
+    private StateHandler mStateHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
-        mTextView = (TextView) layout.findViewById(R.id.lockState);
+
+        mStateHandler = new StateHandler(this);
     }
 }
