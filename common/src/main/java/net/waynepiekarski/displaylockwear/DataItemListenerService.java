@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,12 +24,13 @@ public class DataItemListenerService
     PowerManager mPowerManager;
     PowerManager.WakeLock mWakeLock;
     GoogleApiClient mGoogleApiClient;
+    boolean mLocked;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, Const.TAG);
+        mLocked = false;
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -39,12 +41,20 @@ public class DataItemListenerService
     }
 
     private void setLockState(boolean state) {
-        if (state) {
+        if (state == mLocked) {
+            Log.d(Const.TAG, "Skipping setLockState since state=" + state + " and mLocked=" + mLocked + " are the same");
+        } else if (state) {
             Log.d(Const.TAG, "Locking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, Const.TAG);
             mWakeLock.acquire();
+            mLocked = true;
+            Toast.makeText(this, Const.TAG + ": Locking display on", Toast.LENGTH_SHORT).show();
         } else {
             Log.d(Const.TAG, "Unlocking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
             mWakeLock.release();
+            mWakeLock = null;
+            mLocked = false;
+            Toast.makeText(this, Const.TAG + ": Release display to ambient", Toast.LENGTH_SHORT).show();
         }
     }
 
