@@ -88,12 +88,8 @@ public class DataItemListenerService
         if (path.equals(Const.LOCK_PATH)) {
             long timestamp = dataMap.getLong("timestamp");
             boolean state = dataMap.getBoolean("state");
-            if (Const.DEVICE == Const.PHONE) {
-                Log.d(Const.TAG_SERVICE, "Ignoring data item on phone for path " + path + " with state=" + state + ", timestamp=" + timestamp);
-            } else {
-                Log.d(Const.TAG_SERVICE, "Received data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
-                setLockState(state);
-            }
+            Log.d(Const.TAG_SERVICE, "Received data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
+            setLockState(state);
         } else {
             Log.d(Const.TAG_SERVICE, "Ignoring data item update for path " + path);
         }
