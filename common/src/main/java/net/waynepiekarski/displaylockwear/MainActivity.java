@@ -66,6 +66,12 @@ public class MainActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Wearable.DataApi.addListener(mGoogleApiClient, this);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         Wearable.DataApi.removeListener(mGoogleApiClient, this);
