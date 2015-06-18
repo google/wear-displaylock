@@ -17,7 +17,7 @@ import java.util.Comparator;
 
 
 class ExtractedDataItem {
-    ExtractedDataItem (DataItem d) {
+    public ExtractedDataItem (DataItem d) {
         uri = d.getUri();
         path = uri.getPath();
         DataMap m = DataMapItem.fromDataItem(d).getDataMap();
@@ -25,6 +25,10 @@ class ExtractedDataItem {
         state = m.getBoolean("state");
         dataitem = d;
     }
+
+    @Override
+    public String toString() { return "path=" + path + " timestamp=" + timestamp + " state=" + state; }
+
     public String path;
     public Uri uri;
     public long timestamp;
@@ -51,10 +55,10 @@ public class GetFirstDataItem {
                         DataItem temp = buffer.get(i);
                         ExtractedDataItem item = new ExtractedDataItem(temp);
                         if (item.path.contains(path)) {
-                            Log.d(Const.TAG_MISC, "Sorting candidate item " + item.uri);
+                            Log.d(Const.TAG_MISC, "Sorting candidate item " + item.toString());
                             array.add(item);
                         } else {
-                            Log.d(Const.TAG_MISC, "Rejecting candidate item " + item.uri);
+                            Log.d(Const.TAG_MISC, "Rejecting candidate item " + item.toString());
                         }
                     }
                     Collections.sort(array, Comparators.compareTimestamp);
@@ -65,10 +69,10 @@ public class GetFirstDataItem {
                     for (int i = 0; i < array.size(); i++) {
                         ExtractedDataItem item = array.get(i);
                         if (i == 0) {
-                            Log.d(Const.TAG_MISC, "Will use newest data item " + item + " with timestamp=" + item.timestamp + " state=" + item.state);
+                            Log.d(Const.TAG_MISC, "Will use newest data item " + item.toString());
                             callback.processDataItem(item.dataitem);
                         } else {
-                            Log.d(Const.TAG_MISC, "Skipping older data item " + item + " with timestamp=" + item.timestamp + " state=" + item.state);
+                            Log.d(Const.TAG_MISC, "Skipping older data item " + item.toString());
                         }
                     }
                 } else {

@@ -41,6 +41,7 @@ public class DataItemListenerService
     }
 
     private void setLockState(boolean state) {
+        Log.d(Const.TAG_SERVICE, "setLockState(state=" + state + ") and mLocked=" + mLocked + " mWakeLock=" + mWakeLock);
         if (state == mLocked) {
             Log.d(Const.TAG_SERVICE, "Skipping setLockState since state=" + state + " and mLocked=" + mLocked + " are the same");
         } else if (state) {
