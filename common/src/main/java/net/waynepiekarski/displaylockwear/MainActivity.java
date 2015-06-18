@@ -73,7 +73,7 @@ public class MainActivity
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d(Const.TAG, "Successful connection to Google Play Services");
+        Log.d(Const.TAG_ACTIVITY, "Successful connection to Google Play Services");
         Wearable.DataApi.addListener(mGoogleApiClient, this);
 
         // Retrieve the latest data item from any source, calls processDataItem when done
@@ -86,7 +86,7 @@ public class MainActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.e(Const.TAG, "Failed to connect to Google Play Services " + result);
+        Log.e(Const.TAG_ACTIVITY, "Failed to connect to Google Play Services " + result);
         throw new RuntimeException("Play Services failed");
     }
 
@@ -98,27 +98,27 @@ public class MainActivity
 
         if (!mGoogleApiClient.isConnected())
             throw new RuntimeException("Cannot send data item when connection is not ready");
-        Log.d(Const.TAG, "Preparing data item for send, isConnected=" + mGoogleApiClient.isConnected());
+        Log.d(Const.TAG_ACTIVITY, "Preparing data item for send, isConnected=" + mGoogleApiClient.isConnected());
         final PutDataRequest request = putDataMapRequest.asPutDataRequest();
         Wearable.DataApi.putDataItem(mGoogleApiClient, request)
                 .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
                     @Override
                     public void onResult(DataApi.DataItemResult dataItemResult) {
                         if (!dataItemResult.getStatus().isSuccess()) {
-                            Log.e(Const.TAG, "Failed to send data map item for " + Const.LOCK_PATH + " status: " + dataItemResult.getStatus().getStatusCode());
+                            Log.e(Const.TAG_ACTIVITY, "Failed to send data map item for " + Const.LOCK_PATH + " status: " + dataItemResult.getStatus().getStatusCode());
                         } else {
-                            Log.d(Const.TAG, "Sent data map item for " + Const.LOCK_PATH + " " + putDataMapRequest);
+                            Log.d(Const.TAG_ACTIVITY, "Sent data map item for " + Const.LOCK_PATH + " " + putDataMapRequest);
                         }
                     }
                 });
     }
 
     public void setLockStateString(final String in) {
-        Log.d(Const.TAG, "Scheduling set of lock state UI string to " + in);
+        Log.d(Const.TAG_ACTIVITY, "Scheduling set of lock state UI string to " + in);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.d(Const.TAG, "Actually setting lock state UI string to " + in);
+                Log.d(Const.TAG_ACTIVITY, "Actually setting lock state UI string to " + in);
                 mLockState.setText(in);
             }
         });
@@ -139,7 +139,7 @@ public class MainActivity
     }
 
     public void missingDataItem() {
-        Log.d(Const.TAG, "missingDataItem() setting state=false");
+        Log.d(Const.TAG_ACTIVITY, "missingDataItem() setting state=false");
         setLockState(false);
     }
 
@@ -149,16 +149,16 @@ public class MainActivity
         if (path.equals(Const.LOCK_PATH)) {
             long timestamp = dataMap.getLong("timestamp");
             boolean state = dataMap.getBoolean("state");
-            Log.d(Const.TAG, "Updating UI based on data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
+            Log.d(Const.TAG_ACTIVITY, "Updating UI based on data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
             setLockState(state);
         } else {
-            Log.d(Const.TAG, "Ignoring data item update for unknown path " + path);
+            Log.d(Const.TAG_ACTIVITY, "Ignoring data item update for unknown path " + path);
         }
     }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(Const.TAG, "MainActivity onDataChanged() to update the UI state");
+        Log.d(Const.TAG_ACTIVITY, "MainActivity onDataChanged() to update the UI state");
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 DataItem dataItem = dataEvent.getDataItem();

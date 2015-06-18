@@ -51,28 +51,28 @@ public class GetFirstDataItem {
                         DataItem temp = buffer.get(i);
                         ExtractedDataItem item = new ExtractedDataItem(temp);
                         if (item.path.contains(path)) {
-                            Log.d(Const.TAG, "Sorting candidate item " + item.uri);
+                            Log.d(Const.TAG_MISC, "Sorting candidate item " + item.uri);
                             array.add(item);
                         } else {
-                            Log.d(Const.TAG, "Rejecting candidate item " + item.uri);
+                            Log.d(Const.TAG_MISC, "Rejecting candidate item " + item.uri);
                         }
                     }
                     Collections.sort(array, Comparators.compareTimestamp);
                     if (array.size() == 0) {
-                        Log.d(Const.TAG, "No data item found, so calling missingDataItem()");
+                        Log.d(Const.TAG_MISC, "No data item found, so calling missingDataItem()");
                         callback.missingDataItem();
                     }
                     for (int i = 0; i < array.size(); i++) {
                         ExtractedDataItem item = array.get(i);
                         if (i == 0) {
-                            Log.d(Const.TAG, "Will use newest data item " + item + " with timestamp=" + item.timestamp + " state=" + item.state);
+                            Log.d(Const.TAG_MISC, "Will use newest data item " + item + " with timestamp=" + item.timestamp + " state=" + item.state);
                             callback.processDataItem(item.dataitem);
                         } else {
-                            Log.d(Const.TAG, "Skipping older data item " + item + " with timestamp=" + item.timestamp + " state=" + item.state);
+                            Log.d(Const.TAG_MISC, "Skipping older data item " + item + " with timestamp=" + item.timestamp + " state=" + item.state);
                         }
                     }
                 } else {
-                    Log.d(Const.TAG, "getDataItems() returned an error status");
+                    Log.d(Const.TAG_MISC, "getDataItems() returned an error status");
                 }
 
                 buffer.release();

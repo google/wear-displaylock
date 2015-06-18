@@ -42,24 +42,24 @@ public class DataItemListenerService
 
     private void setLockState(boolean state) {
         if (state == mLocked) {
-            Log.d(Const.TAG, "Skipping setLockState since state=" + state + " and mLocked=" + mLocked + " are the same");
+            Log.d(Const.TAG_SERVICE, "Skipping setLockState since state=" + state + " and mLocked=" + mLocked + " are the same");
         } else if (state) {
-            Log.d(Const.TAG, "Locking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
-            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, Const.TAG);
+            Log.d(Const.TAG_SERVICE, "Locking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, Const.TAG_SERVICE);
             mWakeLock.acquire();
             mLocked = true;
-            Toast.makeText(this, Const.TAG + ": Locking display on", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, Const.TAG_MISC + ": Locking display on", Toast.LENGTH_SHORT).show();
         } else {
-            Log.d(Const.TAG, "Unlocking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
+            Log.d(Const.TAG_SERVICE, "Unlocking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
             mWakeLock.release();
             mWakeLock = null;
             mLocked = false;
-            Toast.makeText(this, Const.TAG + ": Release display to ambient", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, Const.TAG_MISC + ": Release display to ambient", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void missingDataItem() {
-        Log.d(Const.TAG, "missingDataItem() doing nothing inside service, there is no need to do anything");
+        Log.d(Const.TAG_SERVICE, "missingDataItem() doing nothing inside service, there is no need to do anything");
     }
 
     public void processDataItem(DataItem dataItem) {
@@ -69,19 +69,19 @@ public class DataItemListenerService
             long timestamp = dataMap.getLong("timestamp");
             boolean state = dataMap.getBoolean("state");
             if (Const.DEVICE == Const.PHONE) {
-                Log.d(Const.TAG, "Ignoring data item on phone for path " + path + " with state=" + state + ", timestamp=" + timestamp);
+                Log.d(Const.TAG_SERVICE, "Ignoring data item on phone for path " + path + " with state=" + state + ", timestamp=" + timestamp);
             } else {
-                Log.d(Const.TAG, "Received data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
+                Log.d(Const.TAG_SERVICE, "Received data item for path " + path + " with state=" + state + ", timestamp=" + timestamp);
                 setLockState(state);
             }
         } else {
-            Log.d(Const.TAG, "Ignoring data item update for path " + path);
+            Log.d(Const.TAG_SERVICE, "Ignoring data item update for path " + path);
         }
     }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(Const.TAG, "onDataChanged()");
+        Log.d(Const.TAG_SERVICE, "onDataChanged()");
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 DataItem dataItem = dataEvent.getDataItem();
@@ -96,13 +96,13 @@ public class DataItemListenerService
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.e(Const.TAG, "Failed to connect to Google Play Services " + result);
+        Log.e(Const.TAG_SERVICE, "Failed to connect to Google Play Services " + result);
         throw new RuntimeException("Play Services failed");
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d(Const.TAG, "Successful connection to Google Play Services");
+        Log.d(Const.TAG_SERVICE, "Successful connection to Google Play Services");
         Wearable.DataApi.addListener(mGoogleApiClient, this);
 
         // Retrieve the latest data item from any source, calls processDataItem when done
