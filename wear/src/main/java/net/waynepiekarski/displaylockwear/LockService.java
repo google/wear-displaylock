@@ -18,7 +18,7 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 
-public class DataItemListenerService
+public class LockService
         extends WearableListenerService
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener, GetFirstDataItem.ProcessDataItemAble
 {
@@ -73,7 +73,7 @@ public class DataItemListenerService
         uiThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(DataItemListenerService.this, message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LockService.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }
