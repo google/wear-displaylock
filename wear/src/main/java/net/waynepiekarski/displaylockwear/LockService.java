@@ -1,8 +1,12 @@
 package net.waynepiekarski.displaylockwear;
 
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,10 +20,8 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
-import com.google.android.gms.wearable.WearableListenerService;
 
-public class LockService
-        extends WearableListenerService
+public class LockService extends Service
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener, GetFirstDataItem.ProcessDataItemAble
 {
     PowerManager mPowerManager;
@@ -27,6 +29,18 @@ public class LockService
     GoogleApiClient mGoogleApiClient;
     boolean mLocked;
     Handler uiThreadHandler;
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(Const.TAG_SERVICE, "LockService.onStartCommand() with start id " + startId + ": " + intent);
+        // We want this service to continue running until it is explicitly stopped, so return sticky
+        return START_STICKY;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     @Override
     public void onCreate() {
