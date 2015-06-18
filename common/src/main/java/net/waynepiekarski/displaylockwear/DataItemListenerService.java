@@ -30,6 +30,7 @@ public class DataItemListenerService
 
     @Override
     public void onCreate() {
+        Log.d(Const.TAG_SERVICE, "onCreate()");
         super.onCreate();
         mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mLocked = false;
@@ -41,6 +42,11 @@ public class DataItemListenerService
                 .addOnConnectionFailedListener(this)
                 .build();
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(Const.TAG_SERVICE, "onDestroy()");
     }
 
     private void setLockState(boolean state) {
@@ -95,7 +101,7 @@ public class DataItemListenerService
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(Const.TAG_SERVICE, "onDataChanged()");
+        Log.d(Const.TAG_SERVICE, "onDataChanged() with " + dataEvents.getCount() + " events");
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 DataItem dataItem = dataEvent.getDataItem();
@@ -106,20 +112,22 @@ public class DataItemListenerService
 
     @Override
     public void onConnectionSuspended(int status) {
+        Log.d(Const.TAG_SERVICE, "onConnectionSuspended(): " + status);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.e(Const.TAG_SERVICE, "Failed to connect to Google Play Services " + result);
+        Log.e(Const.TAG_SERVICE, "onConnectionFailed(): Failed to connect to Google Play Services " + result);
         throw new RuntimeException("Play Services failed");
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d(Const.TAG_SERVICE, "Successful connection to Google Play Services");
+        Log.d(Const.TAG_SERVICE, "onConnected(): Successful connection to Google Play Services");
         Wearable.DataApi.addListener(mGoogleApiClient, this);
 
         // Retrieve the latest data item from any source, calls processDataItem when done
+        Log.d(Const.TAG_SERVICE, "Requesting list of existing data items to sync up to the current state");
         GetFirstDataItem.callProcessDataItem(mGoogleApiClient, Const.LOCK_PATH, this);
     }
 }
