@@ -2,6 +2,7 @@ package net.waynepiekarski.displaylockwear;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,12 +26,14 @@ public class DataItemListenerService
     PowerManager.WakeLock mWakeLock;
     GoogleApiClient mGoogleApiClient;
     boolean mLocked;
+    Handler uiThreadHandler;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mLocked = false;
+        uiThreadHandler = new Handler();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -49,14 +52,24 @@ public class DataItemListenerService
             mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, Const.TAG_SERVICE);
             mWakeLock.acquire();
             mLocked = true;
-            Toast.makeText(this, Const.TAG_MISC + ": Locking display on", Toast.LENGTH_SHORT).show();
+            showToastUiThread(Const.TAG_MISC + ": Locking display on");
         } else {
             Log.d(Const.TAG_SERVICE, "Unlocking display with power manager SCREEN_BRIGHT_WAKE_LOCK");
             mWakeLock.release();
             mWakeLock = null;
             mLocked = false;
-            Toast.makeText(this, Const.TAG_MISC + ": Release display to ambient", Toast.LENGTH_SHORT).show();
+            showToastUiThread(Const.TAG_MISC + ": Release display to ambient");
         }
+    }
+
+    // Toast messages must be done from the UI thread or you get a RuntimeException
+    private void showToastUiThread(final String message) {
+        uiThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(DataItemListenerService.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void missingDataItem() {
