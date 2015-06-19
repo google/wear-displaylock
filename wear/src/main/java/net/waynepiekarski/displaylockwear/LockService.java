@@ -29,6 +29,7 @@ public class LockService extends Service
     GoogleApiClient mGoogleApiClient;
     boolean mLocked;
     Handler uiThreadHandler;
+    boolean mPermanentService = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -56,6 +57,16 @@ public class LockService extends Service
                 .addOnConnectionFailedListener(this)
                 .build();
         mGoogleApiClient.connect();
+
+        // If we are created from BIND_LISTENER, then the LockService is not running permanently. So we need
+        // to start it up manually once here. This will also mark it as started, so that when the device
+        // reboots, the service will immediately start and set the correct state without a data item change
+        if (!mPermanentService) {
+            Log.d(Const.TAG_SERVICE, "mPermanentService is not set, so starting LockService to ensure it keeps running");
+            Intent startServiceIntent = new Intent(this, LockService.class);
+            startService(startServiceIntent);
+            mPermanentService = true;
+        }
     }
 
     @Override
