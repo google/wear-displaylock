@@ -45,7 +45,7 @@ public class GetFirstDataItem {
     }
 
     public static void callProcessDataItem(GoogleApiClient mGoogleApiClient, final String path, final ProcessDataItemAble callback) {
-        Wearable.DataApi.getDataItems(mGoogleApiClient).setResultCallback(new ResultCallback<DataItemBuffer>() {
+        Wearable.DataApi.getDataItems(mGoogleApiClient, Uri.parse("wear:" + Const.LOCK_PATH)).setResultCallback(new ResultCallback<DataItemBuffer>() {
             @Override
             public void onResult(DataItemBuffer buffer) {
                 if (buffer.getStatus().isSuccess()) {
