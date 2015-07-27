@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">DisplayLock Wear</string>
-
+    <string name="app_name">Wear DisplayLock</string>
     <string name="action_settings">Settings</string>
 </resources>
