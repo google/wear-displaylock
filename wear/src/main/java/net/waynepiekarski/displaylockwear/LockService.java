@@ -156,7 +156,6 @@ public class LockService extends Service
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.e(Const.TAG_SERVICE, "onConnectionFailed(): Failed to connect to Google Play Services " + result);
-        throw new RuntimeException("Play Services failed");
     }
 
     @Override

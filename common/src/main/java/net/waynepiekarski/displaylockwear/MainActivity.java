@@ -110,7 +110,6 @@ public class MainActivity
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.e(Const.TAG_ACTIVITY, "Failed to connect to Google Play Services " + result);
-        throw new RuntimeException("Play Services failed");
     }
 
     public void sendState(boolean state) {
