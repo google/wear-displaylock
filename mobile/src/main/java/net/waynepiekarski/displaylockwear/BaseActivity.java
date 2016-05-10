@@ -19,6 +19,8 @@ package net.waynepiekarski.displaylockwear;
 
 import android.app.Activity;
 
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
+
+    abstract public void setUiVisibility(boolean b);
 
 }

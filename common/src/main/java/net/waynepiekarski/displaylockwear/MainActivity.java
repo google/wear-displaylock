@@ -82,6 +82,12 @@ public class MainActivity
         });
     }
 
+    public void setUiVisibility(boolean b) {
+        int state = b ? View.VISIBLE : View.INVISIBLE;
+        mLockButton.setVisibility(state);
+        mUnlockButton.setVisibility(state);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

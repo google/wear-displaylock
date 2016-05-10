@@ -17,18 +17,20 @@
 
 package net.waynepiekarski.displaylockwear;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends WearableActivity {
 
     boolean mPermanentService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setAmbientEnabled();
 
         // Make sure we start up the LockService when the Activity is started. This needs to happen because
         // the app might have just been installed, and the service won't run until we reboot the device, or
@@ -39,5 +41,25 @@ public class BaseActivity extends Activity {
             startService(startServiceIntent);
             mPermanentService = true;
         }
+    }
+
+    abstract public void setUiVisibility(boolean b);
+
+    @Override
+    public void onEnterAmbient(Bundle b) {
+        super.onEnterAmbient(b);
+        setUiVisibility(false);
+    }
+
+    @Override
+    public void onExitAmbient() {
+        super.onExitAmbient();
+        setUiVisibility(true);
+    }
+
+    @Override
+    public void onUpdateAmbient() {
+        super.onUpdateAmbient();
+        // Nothing to refresh here
     }
 }
